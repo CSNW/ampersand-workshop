@@ -26,7 +26,8 @@ The ampersand folks use hapi for a server and jade for a templating engine. We'l
 - install browserify as a devDependency (`--save-dev`)
 - in order to run browserify from the command line, you'll need to run `node_modules\.bin\browserify` or add the `.bin` folder to your path
 - run browserify on your app file: `browserify app.js -o wolves-client.js` and on your tests file: `browserify tests\main_view_tests.js -o tests\tests.js`
-- copy `test\browser\index.html` from mocha's github repo (for some reason this folder isn't downloaded as part of the npm install) as `tests\test.html` and modify it for your project
+- copy `test\browser\index.html` from mocha's github repo (for some reason this folder isn't downloaded as part of the npm install) as `test.html` (it makes things simpler to have this in the root) and modify it for your project
+- use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
 
 ## 3. Testing it Manually
 - write an `index.html` that consists of a single script tag pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply all the other tags)
@@ -113,3 +114,8 @@ routes: {
   </div>
 </body>
 ```
+
+## 9. Use mustache for templates
+
+- npm install `mustache`
+- 
