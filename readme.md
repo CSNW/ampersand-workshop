@@ -167,3 +167,10 @@ routes: {
         }
     }
 ```
+
+## 12. Add a Collection
+
+- in `client/models/howls.js`, extend `ampersand-rest-collection` (and npm install it)
+- set the url property to `http://wolves.technology/howls`, set the model property to `Howl` (and define this at the top of the file to `require('./howl');`
+- define an initialize method that does `this.fetch();`
+
