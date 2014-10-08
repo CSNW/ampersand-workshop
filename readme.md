@@ -42,4 +42,6 @@ The ampersand folks use hapi for a server and jade for a templating engine. We'l
 }
 ```
 
+You can call browserify with `-d` or `--debug` to generate source maps, so the code in the dev tools looks like the source files, not the single generated file.
+
 Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process).
