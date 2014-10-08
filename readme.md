@@ -62,7 +62,7 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 - Write a `client/pages/howls.js` that inherits from `ampersand-view`, with a template of `<section class="page"><h1>Howls! Awoooooooo!</h1></section>`
 
 ## 7. Add a router
-- npm install router
+- npm install ampersand-router
 - I'm not sure how to test the router in the context of mocha's browser tests. If someone figures it out, could you fork this repo & add it here?
 - In `client/router.js`, inherit from `ampersand-router` and set the routes property of the router like this:
 
@@ -118,4 +118,6 @@ routes: {
 ## 9. Use mustache for templates
 
 - npm install `mustache`
-- 
+- save the template above into `client/views/main.mustache` using UTF-8 encoding
+- at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
+- in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
