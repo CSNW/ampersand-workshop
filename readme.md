@@ -140,6 +140,7 @@ routes: {
 - save the template above into `client/views/main.mustache` using UTF-8 encoding
 - npm install `brfs`, which will statically change fs.readFileSync() into strings
 - add `-t brfs` to add the brfs module as a transform plugin
+  - Note: there's a brfs bug (https://github.com/substack/brfs/issues/25) where `require('fs')` as part of a comma-delimited multiple variable declaration statement fails to parse, so you need to put `var fs = require('fs');` on its own line.
 - at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
 - in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
 
