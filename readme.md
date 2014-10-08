@@ -140,3 +140,30 @@ routes: {
 - save the template above into `client/views/main.mustache` using UTF-8 encoding
 - at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
 - in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
+
+## 11. Add a Model
+
+- In `client/models/howl.js`, define a model that extends from `ampersand-model`
+- Add props to the model like this (this creates getters, similar to what we do with our entities metadata):
+
+```javascript
+    props: {
+        id: 'string',
+        content: 'string',
+        createdAt: 'date',
+        user: 'object'
+    },
+```
+
+- Add a derived property of `niceDate` that formats using the `moment` library (which you'll need to npm install):
+
+```javascript
+    derived: {
+        niceDate: {
+            deps: ['createdAt'],
+            fn: function () {
+                return moment(this.createdAt).fromNow();
+            }
+        }
+    }
+```
