@@ -138,6 +138,8 @@ routes: {
 
 - npm install `mustache`
 - save the template above into `client/views/main.mustache` using UTF-8 encoding
+- npm install `brfs`, which will statically change fs.readFileSync() into strings
+- add `-t brfs` to add the brfs module as a transform plugin
 - at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
 - in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
 
@@ -174,3 +176,22 @@ routes: {
 - set the url property to `http://wolves.technology/howls`, set the model property to `Howl` (and define this at the top of the file to `require('./howl');`
 - define an initialize method that does `this.fetch();`
 
+## 13. Render the collection on the view
+
+- in `client/app.js`, set `this.howls = new Howls();` (and require it at the top of the file)
+- in `client/pages/howls.js`, add a render method that calls `renderWithTemplate()` and `renderCollection()` (and require `../views/howl` at the top of the file):
+
+```javascript
+        this.renderWithTemplate();
+        this.renderCollection(app.howls, HowlView, this.queryByHook('howls-container'));
+```
+
+- add `<div data-hook="howls-container"></div>` to the howls template
+- create a new howl view in `client/views/howl.js` that extends from `ampersand-view` and sets the template to a new mustache file:
+
+```html
+<div class="well">
+  <p>{{model.niceDate}}</p>
+  p= model.user.username
+  pre= model.content
+```
