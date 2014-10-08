@@ -115,7 +115,26 @@ routes: {
 </body>
 ```
 
-## 9. Use mustache for templates
+## 9. Use the router on click
+
+- in `client/views/main.js`, add handling of the link click, making clicks trigger navigate actions:
+
+```javascript
+    events: {
+        'click a[href]': 'handleLinkClick'
+    },
+    handleLinkClick: function (e) {
+        var aTag = e.target;
+        var isLocal = aTag.host === window.location.host;
+
+        if (isLocal && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+            e.preventDefault();
+            app.router.history.navigate(aTag.pathname, {trigger: true});
+        }
+    }
+```
+
+## 10. Use mustache for templates
 
 - npm install `mustache`
 - save the template above into `client/views/main.mustache` using UTF-8 encoding
