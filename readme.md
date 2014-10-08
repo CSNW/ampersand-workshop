@@ -63,7 +63,7 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 
 ## 7. Add a router
 - npm install ampersand-router
-- I'm not sure how to test the router in the context of mocha's browser tests. If someone figures it out, could you fork this repo & add it here?
+- TODO: figure out how to test the router, see http://stackoverflow.com/questions/9215737/testing-routers-in-backbone-js-properly
 - In `client/router.js`, inherit from `ampersand-router` and set the routes property of the router like this:
 
 ```javascript
@@ -140,7 +140,7 @@ routes: {
 - save the template above into `client/views/main.mustache` using UTF-8 encoding
 - npm install `brfs`, which will statically change fs.readFileSync() into strings
 - add `-t brfs` to add the brfs module as a transform plugin
-  - Note: there's a brfs bug (https://github.com/substack/brfs/issues/25) where `require('fs')` as part of a comma-delimited multiple variable declaration statement fails to parse, so you need to put `var fs = require('fs');` on its own line.
+  - Note: there's a brfs bug (https://github.com/substack/brfs/issues/28) where `require('fs')` as part of a comma-delimited multiple variable declaration statement fails to parse, so you need to put `var fs = require('fs');` on its own line.
 - at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
 - in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
 
