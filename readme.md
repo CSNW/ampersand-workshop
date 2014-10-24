@@ -317,3 +317,5 @@ var sm = stackMapper(map);
 var inframes = fromStr(stack_arr);
 console.log(sm.map(inframes));
 ```
+
+Note: the zuul testing framework uses https://github.com/stacktracejs/stacktrace.js/ to get a compatible stack trace in a cross-browser way.
