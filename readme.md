@@ -9,7 +9,7 @@
 
 Instead of using large, general-purpose libraries like jQuery and Underscore, we'll practice using standards-compliant JS with polyfills where necessary, [`lodash-node`](https://www.npmjs.org/package/lodash-node) and other mini-modules.
 
-Larger libraries are more convenient at first, but have fun trying to update the jQuery dependency in a large app. Using a proper module system like npm helps a little because each module can have its own version of jQuery, but then you're delivering and using multiple versions of jQuery on the client. Mini-modules (along with thoughtful dependency versioning and `npm dedupe`) are a more maintainable solution.
+Larger libraries are more convenient at first, but have fun trying to update the jQuery dependency in a large app. Using a proper module system like npm helps a little because each module can have its own version of jQuery, but then you're delivering and using multiple versions of jQuery on the client. Mini-modules (along with thoughtful dependency versioning and [`npm dedupe`](https://www.npmjs.org/doc/cli/npm-dedupe.html)) are a more maintainable solution.
 
 Large sections of the app can be separated out into standalone modules, with their own test suites and versioned dependencies. This breaks us away from the feel of a monolithic app and allows us to be more agile. It also facilitates re-use of sub-components within other apps and isolates the potential impact of changes (for example, you can update a mini-module dependency used by the task subsystem of an app, it won't break other parts of the app because they would continue using the older version of that mini-module). This sort of thing can be done with CSS as well -- less, for example, has a namespacing feature so you can use CSS from one namespace in one part of the app (say "bootstrap-3.2.0") and CSS from another namespace ("boostrap 3.0.0") in another.
 
@@ -19,7 +19,7 @@ Large sections of the app can be separated out into standalone modules, with the
 
 * Changed the naming conventions. &yet likes to put all client-side code in a `client` folder, but since we have no server-side code in this project, we'll keep things flatter & keep everything at the root level. Also, &yet uses identical filenames, relying solely on folder names to keep things straight, but we prefer to put a "_view.js" suffix on views, a "_tests.js" suffix on tests and a "_page.js" suffix on top-level views (but we don't add suffixes to models/collections).
 * Using ECMAScript 5-6, polyfills & `lodash-node` mini-modules instead of underscore (Ampersand has recently been moving in this direction as well)
-* Using HTML 4-5, polyfills & mini-modules instead of jQuery
+* Using HTML 4-5 (for instance `el.textContent`), polyfills & mini-modules instead of jQuery
 
 ## 1. Writing a Mocha Test
 
@@ -34,14 +34,17 @@ Large sections of the app can be separated out into standalone modules, with the
 
 ## 2. Watching Your Test Fail
 
-It's good to watch your test fail to make sure the basic test infrastructure is installed and working and to ensure that the test doesn't pass before you've implemented the functionality and to ensure the test is failing the way you expect (because MainView hasn't been written yet, as opposed to a syntax error or something else).
+It's good to watch your test fail before you implement the functionality (the "red" in the "red, green, refactor" TDD mantra). This is so you can:
 
-- if you run the tests in your tests folder via `mocha tests`, it should not work because you installed mocha locally, not globally.
-  - if it does work, run `where mocha` (win) or `which mocha` (*nix) to see where mocha is installed globally
-  - you want a locally versioned & configured test framework, not a global one. One of the big advantages of `npm` and node's module system is the priority given to locally-versioned and locally-configured dependencies.
+* make sure it *does* fail
+* make sure it fails the way you expect (not a syntax error in the test code, for instance)
+
+- You should not be able to run mocha directly (via `mocha tests`) because it is installed locally, not globally.
+  - if you *can* run mocha directly, run `where mocha` (win) or `which mocha` (*nix) to see where mocha is installed globally and remove it
+  - you want a locally versioned & configured test framework, not a global one. One of the big advantages of `npm` and of node's module system is the priority given to locally-versioned and locally-configured dependencies.
 - to run mocha & see your tests fail, you can run `node_modules/.bin/mocha tests`
-- it should fail with `Error: Cannot find module '../views/main_view.js'` (b/c we haven't written this file yet)
-- the standard way to run the tests for any npm/node module, regardless of what test framework is used, is `npm test`. To register this, just add it to a new `scripts` section in your package.json like this (`node_modules/.bin` is automatically added to the path for npm scripts):
+- this should fail with `Error: Cannot find module '../views/main_view.js'` (b/c we haven't written this file yet)
+- the standard way to run the tests for any npm/node module, regardless of what test framework is used, is `npm test`. To register mocha with `npm test`, just add it to a new `scripts` section in your package.json like this (the path for npm scripts includes `node_modules/.bin`):
 
 ```json
 "scripts": {
@@ -51,8 +54,10 @@ It's good to watch your test fail to make sure the basic test infrastructure is 
 
 ## 3. Making Your Test Pass
 
-- in `views/main_view.js`, require `ampersand-view` and export a view that extends from it (via `module.exports = AmpersandView.extend({...});`, setting a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
-- in `app.js` set `window.app` to an object w/ an init function that uses `domready` (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main.js')`. Notice that the template *includes* the view's element (`<body>`).
+- create a `views` folder and, inside it, `main_view.js` which requires `ampersand-view` (you'll need to npm install `--save` this)
+- this main_view.js module should export a view that extends from AmpersandView (`module.exports = AmpersandView.extend({...});`
+- set a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
+- create `app.js` in the root folder and in it, set `window.app` to an object w/ an init function that uses `domready` (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main.js')`. Notice that the template *includes* the view's element (`<body>`).
 - at the bottom of app.js, run `window.app.init()`
 - install browserify as a devDependency (`--save-dev`)
 - in order to run browserify from the command line, you'll need to run `node_modules\.bin\browserify` or add the `.bin` folder to your path
