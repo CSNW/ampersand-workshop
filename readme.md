@@ -9,14 +9,16 @@
 
 Instead of using large, general-purpose libraries like jQuery and Underscore, we'll practice using standards-compliant JS with polyfills where necessary, [`lodash-node`](https://www.npmjs.org/package/lodash-node) and other mini-modules.
 
-*Note:* Originally, the &yet version of this workshop used hapi for a server and jade for a templating engine, but we'll use a simple static [`http-server`](https://www.npmjs.org/package/http-server) with mustache.
+Larger libraries are more convenient at first, but have fun trying to update the jQuery dependency in a large app. Using a proper module system like npm helps a little because each module can have its own version of jQuery, but then you're delivering and using multiple versions of jQuery on the client. Mini-modules (along with thoughtful dependency versioning and `npm dedupe`) are a more maintainable solution.
+
+Large sections of the app can be separated out into standalone modules, with their own test suites and versioned dependencies. This breaks us away from the feel of a monolithic app and allows us to be more agile. It also facilitates re-use of sub-components within other apps and isolates the potential impact of changes (for example, you can update a mini-module dependency used by the task subsystem of an app, it won't break other parts of the app because they would continue using the older version of that mini-module). This sort of thing can be done with CSS as well -- less, for example, has a namespacing feature so you can use CSS from one namespace in one part of the app (say "bootstrap-3.2.0") and CSS from another namespace ("boostrap 3.0.0") in another.
+
+*Note:* Originally, the &yet version of this workshop used hapi for a server and jade for a templating engine, but we'll use a simple static [`http-server`](https://www.npmjs.org/package/http-server) with [mustache](https://github.com/janl/mustache.js/) templating.
 
 ### Changes from previous versions
 
-* Named the view files `views/main_view.js` instead of `client/views/main.js`
-* Named the page files `pages/main_page.js` instead of `client/pages/main.js`
-* Put app.js & router.js in the root folder instead of in `client/`
-* Using ECMAScript 5-6, polyfills & `lodash-node` mini-modules instead of underscore
+* Changed the naming conventions. &yet likes to put all client-side code in a `client` folder, but since we have no server-side code in this project, we'll keep things flatter & keep everything at the root level. Also, &yet uses identical filenames, relying solely on folder names to keep things straight, but we prefer to put a "_view.js" suffix on views, a "_tests.js" suffix on tests and a "_page.js" suffix on top-level views (but we don't add suffixes to models/collections).
+* Using ECMAScript 5-6, polyfills & `lodash-node` mini-modules instead of underscore (Ampersand has recently been moving in this direction as well)
 * Using HTML 4-5, polyfills & mini-modules instead of jQuery
 
 ## 1. Writing a Mocha Test
