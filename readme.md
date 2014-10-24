@@ -26,7 +26,7 @@ Large sections of the app can be separated out into standalone modules, with the
 - create a new project folder, name it whatever you want and put `{"name": "wolves-client"}` in a `package.json` file in the root (this project is the main part of the &yet training and is part of a futuristic drama involving mad scientists and wolf attacks)
 - npm install mocha using the `--save-dev` to autopopulate package.json (see [npm install docs](https://www.npmjs.org/doc/cli/npm-install.html))
 - create a `tests` folder w/ a `main_view_tests.js` file that describes a "main view" (we haven't created this yet) -- the main view 'should render the text "Some Text"' (see [Mocha: Getting Started](http://mochajs.org/#getting-started) for an example)
-- the test should require MainView from `../views/main_view.js` (Node.js [require docs](http://nodejs.org/api/modules.html#modules_modules)), instantiate it with no arguments, call `render()` on the view and finally, use Node's [assert](http://nodejs.org/api/assert.html#assert_assert) to verify that the text in the view's `el` equals "Some Text" (you'll need to require assert at the top of your file, it's included in node so you don't have to `npm install` it).
+- the test should require MainView from `../views/main_view.js` (Node.js [require docs](http://nodejs.org/api/modules.html#modules_modules)), instantiate it with no arguments, and finally, use Node's [assert](http://nodejs.org/api/assert.html#assert_assert) to verify that the text in the view's `el` equals "Some Text" (you'll need to require assert at the top of your file, it's included in node so you don't have to `npm install` it).
 
 *Note:* Instead of installing jQuery for `$(el).text()`, use `el.textContent`, it's in the HTML standard & is supported by IE9+ (IE's `el.innerText` is non-standard & isn't supported by FF). If you really need IE8 support, there's a robust `textContent` polyfill at https://github.com/shawnbot/aight.
 
@@ -39,7 +39,8 @@ It's good to watch your test fail before you implement the functionality (the "r
 * make sure it *does* fail
 * make sure it fails the way you expect (not a syntax error in the test code, for instance)
 
-- You should not be able to run mocha directly (via `mocha tests`) because it is installed locally, not globally.
+To get the tests to fail:
+- Verify that mocha is not globally installed (that you can't run it via `mocha tests`) -- it should be installed locally, not globally.
   - if you *can* run mocha directly, run `where mocha` (win) or `which mocha` (*nix) to see where mocha is installed globally and remove it
   - you want a locally versioned & configured test framework, not a global one. One of the big advantages of `npm` and of node's module system is the priority given to locally-versioned and locally-configured dependencies.
 - to run mocha & see your tests fail, you can run `node_modules/.bin/mocha tests`
@@ -57,7 +58,7 @@ It's good to watch your test fail before you implement the functionality (the "r
 - create a `views` folder and, inside it, `main_view.js` which requires `ampersand-view` (you'll need to npm install `--save` this)
 - this main_view.js module should export a view that extends from AmpersandView (`module.exports = AmpersandView.extend({...});`
 - set a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
-- create `app.js` in the root folder and in it, set `window.app` to an object w/ an init function that uses `domready` (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main.js')`. Notice that the template *includes* the view's element (`<body>`).
+- create `app.js` in the root folder and in it, set `window.app` to an object w/ an init function that uses [`domready`](https://www.npmjs.org/package/domready) (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main_view.js')`. Notice that the template *includes* the view's element (`<body>`).
 - at the bottom of app.js, run `window.app.init()`
 - install browserify as a devDependency (`--save-dev`)
 - in order to run browserify from the command line, you'll need to run `node_modules\.bin\browserify` or add the `.bin` folder to your path
@@ -210,13 +211,13 @@ routes: {
 ## 13. Add a Collection
 
 - in `models/howls.js`, extend `ampersand-rest-collection` (and npm install it)
-- set the url property to `http://wolves.technology/howls`, set the model property to `Howl` (and define this at the top of the file to `require('./howl');`
+- set the url property to `http://wolves.technology/howls`, set the model property to `Howl` (and define this at the top of the file to `require('./howl.js');`
 - define an initialize method that does `this.fetch();`
 
 ## 14. Render the collection on the view
 
 - in `app.js`, set `this.howls = new Howls();` (and require it at the top of the file)
-- in `pages/howls.js`, add a render method that calls `renderWithTemplate()` and `renderCollection()` (and require `../views/howl` at the top of the file):
+- in `pages/howls_page.js`, add a render method that calls `renderWithTemplate()` and `renderCollection()` (and require `../views/howl_view.js` at the top of the file):
 
 ```javascript
         this.renderWithTemplate();
@@ -224,7 +225,7 @@ routes: {
 ```
 
 - add `<div data-hook="howls-container"></div>` to the howls template
-- create a new howl view in `views/howl.js` that extends from `ampersand-view` and sets the template to a new mustache file:
+- create a new howl view in `views/howl_view.js` that extends from `ampersand-view` and sets the template to a new mustache file:
 
 ```html
 <div class="well">
