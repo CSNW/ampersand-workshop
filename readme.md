@@ -65,7 +65,7 @@ Run the tests again and you should get a different failure:
 ReferenceError: document is not defined
 ```
 
-This is because everything is running in node, not the browser.
+This is because everything is running in node and there is no global `document` object.
 
 - install browserify as a devDependency (`--save-dev`) (Note: I got repeated ERR's and an infinite loop when I did this, running `npm cache clean` and retrying fixed it).
 - add a "build" script that calls browserify to package.json:
@@ -77,26 +77,51 @@ This is because everything is running in node, not the browser.
 ```
 
 - run your new build script via `npm run build`. If there is no output, it succeeded.
+- create a `test.html` file in the root that looks like this:
 
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="node_modules/mocha/mocha.css" />
+    <script src="node_modules/mocha/mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <script src="tests/tests.js"></script>
+    <script>
+      onload = function() {
+        mocha.checkLeaks();
+        var runner = mocha.run();
+      };
+    </script>
+  </head>
+  <body>
+    <div id="mocha"></div>
+  </body>
+</html>
+```
 
+- change your test script to `start test.html` (win) or `open test.html` (mac):
 
-- create `app.js` in the root folder and in it, set `window.app` to an object w/ an `init()` function
+```json
+"scripts": {
+  "test": "start test.html"
+}
+```
+
+- run `npm test`, if the test doesn't pass, fix any bugs (Note that the files & line numbers in the error stack are untranslated -- they refer to the single bundle file instead of using the sourcemap. Apparently Chrome uses the sourcemap the debugger, but not for error messages. We can and should convert the stack using the sourcemap, but I still need to streamline the process, currently it's a bit of work, see the "Aside: Converting error stacks using sourcemaps" section below.)
+
+## 4. Testing Manually
+
+- create an `app.js` file in the root folder and in it, set `window.app` to an object w/ an `init()` function
+
 - inside the init function, call [`domready`](https://www.npmjs.org/package/domready) (you'll need to npm install `domready`) and in the callback, set the app's view property to a `new MainView({el: document.body})` (you'll need to require MainView via `require('./views/main_view.js')`. Notice that in Ampersand the template *includes* the view's element (`<body>`).
 - at the bottom of app.js, run `window.app.init()`
 
-
-
-
-
-- run browserify on your app file: `browserify app.js -o wolves-client.js` and on your tests file: `browserify tests\main_view_tests.js -o tests\tests.js`
-- copy `test\browser\index.html` from mocha's github repo (for some reason this folder isn't downloaded as part of the npm install) as `test.html` (it makes things simpler to have this in the root) and modify it for your project
+- run browserify on your app file as part of the build script by adding: `... && browserify app.js -o wolves-client.js`
+- write an `index.html` that consists of a single script tag pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply `<html>`, `<head>`, `<body>`, etc)
 - use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
 
-## 4. Testing it Manually
-- write an `index.html` that consists of a single script tag pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply all the other tags)
-- use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
+## 5. Smoothing the process with watchify
 
-## 5. Smoothing the process
 - install watchify to watch & build your compiled files
 - add scripts to package.json's "scripts" property, here's the example from the browserify handbook:
 
@@ -109,7 +134,7 @@ This is because everything is running in node, not the browser.
 
 You can call browserify with `-d` or `--debug` to generate source maps, so the code in the dev tools looks like the source files, not the single generated file.
 
-Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process).
+Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process). However, you can't use ` && ` to run two watchify commands because watchify never returns. Instead you can do `start watchify ...` on windows or (I think) `watchify ... &` on *nix.
 
 ## 6. Add a home page
 
@@ -261,7 +286,7 @@ routes: {
 ```
 
 
-## Aside: converting error stacks using sourcemaps
+## Aside: Converting error stacks using sourcemaps
 
 Apparently Chrome uses source maps for interactive debugging/stepping, but it doesn't use them for converting or displaying error stacks. Here's how to convert error stacks manually:
 
