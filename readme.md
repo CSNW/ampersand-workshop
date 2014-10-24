@@ -57,11 +57,37 @@ To get the tests to fail:
 
 - create a `views` folder and, inside it, `main_view.js` which requires `ampersand-view` (you'll need to npm install `--save` this)
 - this main_view.js module should export a view that extends from AmpersandView (`module.exports = AmpersandView.extend({...});`
-- set a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
-- create `app.js` in the root folder and in it, set `window.app` to an object w/ an init function that uses [`domready`](https://www.npmjs.org/package/domready) (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main_view.js')`. Notice that the template *includes* the view's element (`<body>`).
+- set a `template` property to `'<body><h1>Some Text</h1></body>'` and an `autoRender` property to `true`.
+
+Run the tests again and you should get a different failure:
+
+```
+ReferenceError: document is not defined
+```
+
+This is because everything is running in node, not the browser.
+
+- install browserify as a devDependency (`--save-dev`) (Note: I got repeated ERR's and an infinite loop when I did this, running `npm cache clean` and retrying fixed it).
+- add a "build" script that calls browserify to package.json:
+
+```json
+"scripts": {
+  "build": "browserify tests/main_view_tests.js -o tests/tests.js"
+}
+```
+
+- run your new build script via `npm run build`. If there is no output, it succeeded.
+
+
+
+- create `app.js` in the root folder and in it, set `window.app` to an object w/ an `init()` function
+- inside the init function, call [`domready`](https://www.npmjs.org/package/domready) (you'll need to npm install `domready`) and in the callback, set the app's view property to a `new MainView({el: document.body})` (you'll need to require MainView via `require('./views/main_view.js')`. Notice that in Ampersand the template *includes* the view's element (`<body>`).
 - at the bottom of app.js, run `window.app.init()`
-- install browserify as a devDependency (`--save-dev`)
-- in order to run browserify from the command line, you'll need to run `node_modules\.bin\browserify` or add the `.bin` folder to your path
+
+
+
+
+
 - run browserify on your app file: `browserify app.js -o wolves-client.js` and on your tests file: `browserify tests\main_view_tests.js -o tests\tests.js`
 - copy `test\browser\index.html` from mocha's github repo (for some reason this folder isn't downloaded as part of the npm install) as `test.html` (it makes things simpler to have this in the root) and modify it for your project
 - use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
@@ -232,4 +258,62 @@ routes: {
   <p>{{model.niceDate}}</p>
   p= model.user.username
   pre= model.content
+```
+
+
+## Aside: converting error stacks using sourcemaps
+
+Apparently Chrome uses source maps for interactive debugging/stepping, but it doesn't use them for converting or displaying error stacks. Here's how to convert error stacks manually:
+
+* npm install `exorcist` and add it to your browserify commands to generate separate source map files:
+
+```json
+"scripts": {
+  "build": "browserify tests/main_view_tests.js -d | exorcist tests\\tests.js.map > tests/tests.js"
+}
+```
+
+* The source map file doesn't know what file you piped the output to, so it has a default `file` property set to "generated.js". You'll need to update the `file` property and JSON.parse the map into an object:
+
+```javascript
+var map = JSON.parse(fs.readFileSync('tests\\tests.js.map', 'utf8'));
+map.file = "tests/tests.js";
+```
+
+* Convert chrome's err.stack property from a string to an array and use `shift()` to pop off the first item in the array which is the error message itself and not a property stack line:
+
+```javascript
+var stack_arr = err.stack.split('\r\n');
+stack_arr.shift();
+```
+
+* Feed this array into a function that converts it into what stackMapper uses (this code is originally from https://github.com/thlorenz/stack-mapper/blob/master/test/util/frames-fromstr.js, but I modified the regex slightly to allow a trailing `)` b/c Chrome stacks now includes that if the line is in a named function):
+
+```javascript
+function fromStr(str_arr) {
+  var frames = [];
+  for (var i=0 ; i<str_arr.length ; ++i) {
+    var frame_str = str_arr[i];
+
+    var matched = frame_str.match(/^(.*)[:](\d+)[:](\d+)\)?$/);
+    if (!matched)
+      throw new Error('no match: "' + frame_str + '"');
+    frames.push({
+      filename: matched[1],
+      line: matched[2] - 0,
+      column: matched[3] - 0
+    });
+  }
+
+  return frames;
+}
+```
+
+* Finally, instatiate the stack-mapper with the map and run the frames into it to get the modified frames:
+
+```javascript
+var stackMapper = require('stack-mapper');
+var sm = stackMapper(map);
+var inframes = fromStr(stack_arr);
+console.log(sm.map(inframes));
 ```
