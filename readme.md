@@ -1,27 +1,56 @@
 # Objectives
 
-* Get comfortable
-  * Developing with Ampersand
-  * Writing Client-Side Modules (browserify)
-* Practice MVC
-* Write Code as Quickly as Possible
-* Get Unstuck as Quickly as Possible
+* Get comfortable:
+  * Developing with [Ampersand](http://ampersandjs.com/)
+  * Writing client-side modules w/ [Browserify](http://browserify.org/)
+* Practice TDD, MVC & mini-module development
+* Write code as quickly as possible
+* Get unstuck as quickly as possible
 
-# Notes
+Instead of using large, general-purpose libraries like jQuery and Underscore, we'll practice using standards-compliant JS with polyfills where necessary, [`lodash-node`](https://www.npmjs.org/package/lodash-node) and other mini-modules.
 
-The ampersand folks use hapi for a server and jade for a templating engine. We'll use express and mustache. 
+*Note:* Originally, the &yet version of this workshop used hapi for a server and jade for a templating engine, but we'll use a simple static [`http-server`](https://www.npmjs.org/package/http-server) with mustache.
 
-## 1. Writing a Test
+### Changes from previous versions
 
-- put `node_modules` in a `.gitignore`
-- put `{"name": "wolves-client"}` in a `package.json`
-- in the spirit of TDD, npm install mocha. Use `--save` to autopopulate package.json while you're at it (`npm install mocha --save`)
-- write a mocha test in `tests\main_view_tests.js` that `describe()`s the main view -- `it()` should render the text "Some Text"
-- the test should require `../views/main.js`, instantiate it and verify that the view's `el` has "Some Text" in it (you'll probably want to add jQuery as a devDependency, `--save-dev`, and use it's `.text()` for this...)
+* Named the view files `views/main_view.js` instead of `client/views/main.js`
+* Named the page files `pages/main_page.js` instead of `client/pages/main.js`
+* Put app.js & router.js in the root folder instead of in `client/`
+* Using ECMAScript 5-6, polyfills & `lodash-node` mini-modules instead of underscore
+* Using HTML 4-5, polyfills & mini-modules instead of jQuery
 
-## 2. Making it Pass
-- in `client/views/main.js`, require `ampersand-view` and export a view that extends from it (via `module.exports = AmpersandView.extend({...});`, setting a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
-- in `client/app.js` set `window.app` to an object w/ an init function that uses `domready` (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main.js')`. Notice that the template *includes* the view's element (`<body>`).
+## 1. Writing a Mocha Test
+
+- create a new project folder, name it whatever you want and put `{"name": "wolves-client"}` in a `package.json` file in the root (this project is the main part of the &yet training and is part of a futuristic drama involving mad scientists and wolf attacks)
+- npm install mocha using the `--save-dev` to autopopulate package.json (see [npm install docs](https://www.npmjs.org/doc/cli/npm-install.html))
+- create a `tests` folder w/ a `main_view_tests.js` file that describes a "main view" (we haven't created this yet) -- the main view 'should render the text "Some Text"' (see [Mocha: Getting Started](http://mochajs.org/#getting-started) for an example)
+- the test should require MainView from `../views/main_view.js` (Node.js [require docs](http://nodejs.org/api/modules.html#modules_modules)), instantiate it with no arguments, call `render()` on the view and finally, use Node's [assert](http://nodejs.org/api/assert.html#assert_assert) to verify that the text in the view's `el` equals "Some Text" (you'll need to require assert at the top of your file, it's included in node so you don't have to `npm install` it).
+
+*Note:* Instead of installing jQuery for `$(el).text()`, use `el.textContent`, it's in the HTML standard & is supported by IE9+ (IE's `el.innerText` is non-standard & isn't supported by FF). If you really need IE8 support, there's a robust `textContent` polyfill at https://github.com/shawnbot/aight.
+
+*Note 2:* Be sure to instantiate the view in the test itself (inside the `it`), not the `describe` or the top level of the test module.
+
+## 2. Watching Your Test Fail
+
+It's good to watch your test fail to make sure the basic test infrastructure is installed and working and to ensure that the test doesn't pass before you've implemented the functionality and to ensure the test is failing the way you expect (because MainView hasn't been written yet, as opposed to a syntax error or something else).
+
+- if you run the tests in your tests folder via `mocha tests`, it should not work because you installed mocha locally, not globally.
+  - if it does work, run `where mocha` (win) or `which mocha` (*nix) to see where mocha is installed globally
+  - you want a locally versioned & configured test framework, not a global one. One of the big advantages of `npm` and node's module system is the priority given to locally-versioned and locally-configured dependencies.
+- to run mocha & see your tests fail, you can run `node_modules/.bin/mocha tests`
+- it should fail with `Error: Cannot find module '../views/main_view.js'` (b/c we haven't written this file yet)
+- the standard way to run the tests for any npm/node module, regardless of what test framework is used, is `npm test`. To register this, just add it to a new `scripts` section in your package.json like this (`node_modules/.bin` is automatically added to the path for npm scripts):
+
+```json
+"scripts": {
+  "test": "mocha tests"
+}
+```
+
+## 3. Making Your Test Pass
+
+- in `views/main_view.js`, require `ampersand-view` and export a view that extends from it (via `module.exports = AmpersandView.extend({...});`, setting a `template` property to `<body><h1>Some Text</h1></body>` and an `autoRender` property to `true`.
+- in `app.js` set `window.app` to an object w/ an init function that uses `domready` (you'll need to npm install `domready`) to set its view property to a `new MainView({el: document.body})` (you'll need to require the view via `require('./views/main.js')`. Notice that the template *includes* the view's element (`<body>`).
 - at the bottom of app.js, run `window.app.init()`
 - install browserify as a devDependency (`--save-dev`)
 - in order to run browserify from the command line, you'll need to run `node_modules\.bin\browserify` or add the `.bin` folder to your path
@@ -29,11 +58,11 @@ The ampersand folks use hapi for a server and jade for a templating engine. We'l
 - copy `test\browser\index.html` from mocha's github repo (for some reason this folder isn't downloaded as part of the npm install) as `test.html` (it makes things simpler to have this in the root) and modify it for your project
 - use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
 
-## 3. Testing it Manually
+## 4. Testing it Manually
 - write an `index.html` that consists of a single script tag pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply all the other tags)
 - use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
 
-## 4. Smoothing the process
+## 5. Smoothing the process
 - install watchify to watch & build your compiled files
 - add scripts to package.json's "scripts" property, here's the example from the browserify handbook:
 
@@ -48,23 +77,23 @@ You can call browserify with `-d` or `--debug` to generate source maps, so the c
 
 Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process).
 
-## 5. Add a home page
+## 6. Add a home page
 
-- Write a `tests\home_view_tests.js` file that requires `../client/pages/home.js` (the ampersand convention is to put sub-views in `/views/` and top-level views in `/pages/`) and instantiates it and verifies that it contains the text "Hey there, wolves"
+- Write a `tests\home_view_tests.js` file that requires `../pages/home_page.js` (the ampersand convention is to put sub-views in `/views/` and top-level views in `/pages/`) and instantiates it and verifies that it contains the text "Hey there, wolves"
 - Write an `tests\index.js` file that requires both test files (be sure to begin the paths with `./`, otherwise node will think they're `npm install`ed modules, not relative file references)
 - Change the browserify/watchify test commands to point to this central file instead of `main_view_tests.js`
-- Create a `client/pages/home.js` view that inherits from `ampersand-view` and sets the `template` property to `<section class="page"><h1>Hey there, wolves</h1></section>`
+- Create a `pages/home.js` view that inherits from `ampersand-view` and sets the `template` property to `<section class="page"><h1>Hey there, wolves</h1></section>`
 - Verify the test passes (you won't be able to test manually until we put in a router and a View Switcher)
 
-## 6. Add a list view
+## 7. Add a list view
 
-- Write a `howls_view_tests.js` test that requires `../client/pages/howls.js` and instantiates the view & verifies that it has the text "Howls! Awoooooooo!".
-- Write a `client/pages/howls.js` that inherits from `ampersand-view`, with a template of `<section class="page"><h1>Howls! Awoooooooo!</h1></section>`
+- Write a `howls_view_tests.js` test that requires `../pages/howls_page.js` and instantiates the view & verifies that it has the text "Howls! Awoooooooo!".
+- Write a `pages/howls_page.js` that inherits from `ampersand-view`, with a template of `<section class="page"><h1>Howls! Awoooooooo!</h1></section>`
 
-## 7. Add a router
+## 8. Add a router
 - npm install ampersand-router
 - TODO: figure out how to test the router, see http://stackoverflow.com/questions/9215737/testing-routers-in-backbone-js-properly
-- In `client/router.js`, inherit from `ampersand-router` and set the routes property of the router like this:
+- In `router.js`, inherit from `ampersand-router` and set the routes property of the router like this:
 
 ```javascript
 routes: {
@@ -75,10 +104,10 @@ routes: {
 
 - Add a `home()` method to the router that does a `this.trigger('page', new HomePage());` and a `howls()` method that triggers the page event with a new `HowlsPage` (you'll need to `require` 3 things, `ampersand-router`, `./pages/home` and `./pages/howls`).
 
-## 8. Adding ViewSwitcher and turning on the router
+## 9. Adding ViewSwitcher and turning on the router
 
-- in `client/app.js`, require `./router.js` and in `init()` set `this.router` to a new router (no arguments), and after instantiating the new MainView (still inside domready), set `this.router.history.start({pushState: true});`.
-- in `client/views/main.js`, require `ampersand-view-switcher` (you'll need to npm install this) and add the following 3 methods:
+- in `app.js`, require `./router.js` and in `init()` set `this.router` to a new router (no arguments), and after instantiating the new MainView (still inside domready), set `this.router.history.start({pushState: true});`.
+- in `main_view.js`, require `ampersand-view-switcher` (you'll need to npm install this) and add the following 3 methods:
 
 ```javascript
     initialize: function () {
@@ -115,9 +144,9 @@ routes: {
 </body>
 ```
 
-## 9. Use the router on click
+## 10. Use the router on click
 
-- in `client/views/main.js`, add handling of the link click, making clicks trigger navigate actions:
+- in `main_view.js`, add handling of the link click, making clicks trigger navigate actions:
 
 ```javascript
     events: {
@@ -134,19 +163,19 @@ routes: {
     }
 ```
 
-## 10. Use mustache for templates
+## 11. Use mustache for templates
 
 - npm install `mustache`
-- save the template above into `client/views/main.mustache` using UTF-8 encoding
+- save the template above into `views/main.mustache` using UTF-8 encoding
 - npm install `brfs`, which will statically change fs.readFileSync() into strings
 - add `-t brfs` to add the brfs module as a transform plugin
   - Note: there's a brfs bug (https://github.com/substack/brfs/issues/28) where `require('fs')` as part of a comma-delimited multiple variable declaration statement fails to parse, so you need to put `var fs = require('fs');` on its own line.
-- at the top of `client/views/main.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
-- in `client/views/main.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
+- at the top of `main_view.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
+- in `main_view.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
 
-## 11. Add a Model
+## 12. Add a Model
 
-- In `client/models/howl.js`, define a model that extends from `ampersand-model`
+- In `models/howl.js`, define a model that extends from `ampersand-model`
 - Add props to the model like this (this creates getters, similar to what we do with our entities metadata):
 
 ```javascript
@@ -171,16 +200,16 @@ routes: {
     }
 ```
 
-## 12. Add a Collection
+## 13. Add a Collection
 
-- in `client/models/howls.js`, extend `ampersand-rest-collection` (and npm install it)
+- in `models/howls.js`, extend `ampersand-rest-collection` (and npm install it)
 - set the url property to `http://wolves.technology/howls`, set the model property to `Howl` (and define this at the top of the file to `require('./howl');`
 - define an initialize method that does `this.fetch();`
 
-## 13. Render the collection on the view
+## 14. Render the collection on the view
 
-- in `client/app.js`, set `this.howls = new Howls();` (and require it at the top of the file)
-- in `client/pages/howls.js`, add a render method that calls `renderWithTemplate()` and `renderCollection()` (and require `../views/howl` at the top of the file):
+- in `app.js`, set `this.howls = new Howls();` (and require it at the top of the file)
+- in `pages/howls.js`, add a render method that calls `renderWithTemplate()` and `renderCollection()` (and require `../views/howl` at the top of the file):
 
 ```javascript
         this.renderWithTemplate();
@@ -188,7 +217,7 @@ routes: {
 ```
 
 - add `<div data-hook="howls-container"></div>` to the howls template
-- create a new howl view in `client/views/howl.js` that extends from `ampersand-view` and sets the template to a new mustache file:
+- create a new howl view in `views/howl.js` that extends from `ampersand-view` and sets the template to a new mustache file:
 
 ```html
 <div class="well">
