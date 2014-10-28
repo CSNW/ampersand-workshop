@@ -83,6 +83,7 @@ This is because everything is running in node and there is no global `document` 
 ```html
 <html>
   <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="node_modules/mocha/mocha.css" />
     <script src="node_modules/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
