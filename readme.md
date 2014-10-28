@@ -146,7 +146,10 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 Now if you run watchify or browserify, you should get an error: `Cannot find module '../pages/home_page.js'` -- this is the "red" failing test. Now let's make it pass:
 
 - Create a `pages/home.js` view that inherits from `ampersand-view` and sets the `template` property to `<section class="page"><h1>Hey there, wolves</h1></section>`
+- Note that creating this file won't cause watchify to re-compile -- the file isn't being watched because it hadn't been created previously. You'll need to touch a file that watchify is watching (the test file) or manually close & re-watch.
 - Verify the test passes (you won't be able to test manually until we put in a router and a View Switcher)
+
+*Note: Sometimes watchify will [hit an EPERM error](https://github.com/substack/watchify/issues/83), apparently it happens when a file is changed while watchify is still building from the previous time. This EPERM error will happen every time from then on; the command window needs to be closed & re-opened for it to reset.*
 
 ## 7. Add a list view
 
