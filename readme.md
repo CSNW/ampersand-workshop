@@ -298,6 +298,81 @@ routes: {
 </div>
 ```
 
+# 14.5. Get the tests to pass by passing in `app` as the `options` to views (thanks Tim!)
+
+- Convert views to accept 'app...' as options on instantiation:
+
+```js
+// main_view.js
+initialize: function initialize(options) {
+  this.listenTo(options.router, 'page', this.handleNewPage);
+}
+
+// howls_page.js
+render: function render() {
+  this.renderWithTemplate();
+  // this.collection is set automatically when "collection" option is passed to view
+  this.renderCollection(this.collection, HowlView, this.queryByHook('howls-container'));
+}
+```
+
+- Update router.js and app.js to pass options to views
+
+```js
+// app.js
+this.view = new MainView({el: document.body, router: this.router});
+
+
+// router.js
+this.trigger('page', new HowlsPage({collection: app.howls}));
+```
+
+- Update tests to pass in router and howls
+
+```js
+// howls_page_tests.js
+var HowlsPage = require('../pages/howls_page.js');
+var Howls = require('../models/howls.js');
+var assert = require('assert');
+
+describe('HowlsPage', function() {
+  var view;
+  var howls;
+
+  beforeEach(function(done) {
+    howls = new Howls();
+    howls.fetch({
+      success: function() {
+        done();
+      }
+    });
+  });
+
+  it('should render', function() {
+    view = new HowlsPage({collection: howls});
+    assert.ok(view.el.innerHTML.length > 0);
+  });
+});
+
+// main_view_test.js
+var MainView = require('../views/main_view.js');
+var Router = require('../router.js');
+var assert = require('assert');
+
+describe('MainView', function() {
+  var router;
+
+  beforeEach(function() {
+    router = new Router();
+  });
+
+  it('should render', function() {
+    var view = new MainView({router: router});
+    assert.ok(view.el.innerHTML.length > 0);
+  });
+});
+```
+
 # 15. Add "me", a current-user model
 
 - create `models/me.js`, inside extend ampersand model with the following properties, session properties and derived properties:
@@ -349,6 +424,10 @@ var parsed = querystring.parse(location.hash.slice(1));
 ```
 
 - Then take the `access_token` property of this parsed object, assign it to me.token and do a `this.redirectTo('/howls');`.
+
+# 18. 
+
+
 
 ## Aside: Converting error stacks using sourcemaps
 
