@@ -133,7 +133,7 @@ This is because everything is running in node and there is no global `document` 
 }
 ```
 
-You can call browserify with `-d` or `--debug` to generate source maps, so the code in the dev tools looks like the source files, not the single generated file. However at one point the embedded source maps froze up Sublime, so I prefer to spin them out to a separate file. This can be done with the `exorcist` module. To use it, install exorcist and change your browserify commands to pipe through exorcist and redirect the output to your file like this: `browserify app.js -d | exorcist wolves-client.js.map > wolves-client.js`.
+You can call browserify with `-d` or `--debug` to generate embedded source maps, so the code in the dev tools looks like the source files, not the single generated file. However, if you want to be able to open the generated file in sublime, you may want to spin out the source maps to a separate file using the `exorcist` module (sublime froze up on me when I had embedded source maps, probably due to the super-long line length, but UltraEdit handled it just fine). Optionally, you can install exorcist and change your browserify commands to pipe through exorcist and redirect the output to your file like this: `browserify app.js -d | exorcist wolves-client.js.map > wolves-client.js`.
 
 Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process). However, you can't use ` && ` to run two watchify commands because watchify never returns. Instead you can do `start watchify ...` on windows or (I think) `watchify ... &` on *nix.
 
@@ -152,7 +152,7 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 
 ## 8. Add a router
 - npm install ampersand-router
-- TODO: figure out how to test the router, see http://stackoverflow.com/questions/9215737/testing-routers-in-backbone-js-properly
+- (Peter's TODO: figure out how to test the router, see http://stackoverflow.com/questions/9215737/testing-routers-in-backbone-js-properly)
 - In `router.js`, inherit from `ampersand-router` and set the routes property of the router like this:
 
 ```javascript
@@ -163,6 +163,8 @@ routes: {
 ```
 
 - Add a `home()` method to the router that does a `this.trigger('page', new HomePage());` and a `howls()` method that triggers the page event with a new `HowlsPage` (you'll need to `require` 3 things, `ampersand-router`, `./pages/home` and `./pages/howls`).
+- @sdkester found that if you try to run this from file://, you'll get `pushState is insecure in file:// mode`. To serve it locally, you can globally install http-server via `npm install http-server -g` and then run it from `http-server -c-1` (in the same folder where your index.html file is) and view it at `http://localhost:8080/index.html`.
+
 
 ## 9. Adding ViewSwitcher and turning on the router
 
