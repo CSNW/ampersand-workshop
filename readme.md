@@ -17,7 +17,7 @@ Large sections of the app can be separated out into standalone modules, with the
 
 ### Changes from previous versions
 
-* Changed the naming conventions. &yet likes to put all client-side code in a `client` folder, but since we have no server-side code in this project, we'll keep things flatter & keep everything at the root level. Also, &yet uses identical filenames, relying solely on folder names to keep things straight, but we prefer to put a "_view.js" suffix on views, a "_tests.js" suffix on tests and a "_page.js" suffix on top-level views (but we don't add suffixes to models/collections).
+* Changed the naming conventions. &yet likes to put all client-side code in a `client` folder, but since we have no server-side code in this project, we'll keep things flatter & keep most things at the root level or one level deep. Also, &yet uses identical filenames, relying solely on folder names to keep things straight. We'll go ahead and use folders (`/views/`, `/pages/`, `/tests/`, etc) but we prefer to also put a "_view.js" suffix on views, a "_tests.js" suffix on tests and a "_page.js" suffix on top-level views (but we don't add suffixes to models/collections).
 * Using ECMAScript 5-6, polyfills & `lodash-node` mini-modules instead of underscore (Ampersand has recently been moving in this direction as well)
 * Using HTML 4-5 (for instance `el.textContent`), polyfills & mini-modules instead of jQuery
 
@@ -296,6 +296,8 @@ routes: {
   <pre>{{model.content}}</pre>
 </div>
 ```
+
+# 15. 
 
 
 ## Aside: Converting error stacks using sourcemaps
