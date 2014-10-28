@@ -142,6 +142,9 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 - Write a `tests\home_view_tests.js` file that requires `../pages/home_page.js` (the ampersand convention is to put sub-views in `/views/` and top-level views in `/pages/`) and instantiates it and verifies that it has the text "Hey there, wolves" (you'll want to require node's built-in `assert` module again to do the assertion).
 - Write an `tests\index.js` file that requires both test files (be sure to begin the paths with `./`, otherwise node will think they're `npm install`ed modules, not relative file references)
 - Change the browserify/watchify test commands to point to this central file instead of `main_view_tests.js`
+
+Now if you run watchify or browserify, you should get an error: `Cannot find module '../pages/home_page.js'` -- this is the "red" failing test. Now let's make it pass:
+
 - Create a `pages/home.js` view that inherits from `ampersand-view` and sets the `template` property to `<section class="page"><h1>Hey there, wolves</h1></section>`
 - Verify the test passes (you won't be able to test manually until we put in a router and a View Switcher)
 
