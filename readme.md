@@ -326,6 +326,19 @@ derived: {
 
 Session properties do not get persisted to the JSON that is sent to the server; derived properties are calculated just-in-time - change events on derived properties happen when any of that property's dependencies change.
 
+
+# 16. Instantiate me in app.js and 
+
+- In app.js, after instantiating the Router and the Howls -- but before domready -- add `window.me = this.me = new Me();` to expose the current user object globally and on the app.
+- in router.js, add a "login" route that maps to a "login" function. This function needs to redirect the user to a 3rd party authorization server and provide a callback URL once the user has authorized with the server:
+
+```javascript
+var baseUrl = 'http://wolves.technology/authorize?redirect_uri=';
+window.location = baseUrl + encodeURIComponent(window.location.origin + '/auth/callback')
+```
+
+
+
 ## Aside: Converting error stacks using sourcemaps
 
 Apparently Chrome uses source maps for interactive debugging/stepping, but it doesn't use them for converting or displaying error stacks. Here's how to convert error stacks manually:
