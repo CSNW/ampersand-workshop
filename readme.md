@@ -174,6 +174,7 @@ routes: {
 - Add a `home()` method to the router that does a `this.trigger('page', new HomePage());` and a `howls()` method that triggers the page event with a new `HowlsPage` (you'll need to `require` 3 things, `ampersand-router`, `./pages/home` and `./pages/howls`).
 - @sdkester found that if you try to run this from file://, you'll get `pushState is insecure in file:// mode`. To serve it locally, you can globally install http-server via `npm install http-server -g` and then run it from `http-server -c-1` (in the same folder where your index.html file is) and view it at `http://localhost:8080/index.html`.
 
+*Note: You'll run into problems if you try to test manually and navigate at this point because the router hasn't been hooked up yet. Continue to the next step for that.*
 
 ## 9. Adding ViewSwitcher and turning on the router
 
@@ -298,7 +299,7 @@ routes: {
 </div>
 ```
 
-# 14.5. Get the tests to pass by passing in `app` as the `options` to views (thanks Tim!)
+# 14.5. Get the tests to pass (thx Tim!)
 
 - Convert views to accept 'app...' as options on instantiation:
 
