@@ -129,7 +129,7 @@ This is because everything is running in node and there is no global `document` 
 ```json
 "scripts": {
   "build": "browserify browser.js -o static/bundle.js",
-  "watch": "watchify browser.js -o static/bundle.js --debug --verbose",
+  "watch": "watchify browser.js -o static/bundle.js --verbose",
 }
 ```
 
