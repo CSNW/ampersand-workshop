@@ -133,7 +133,7 @@ This is because everything is running in node and there is no global `document` 
 }
 ```
 
-You can call browserify with `-d` or `--debug` to generate source maps, so the code in the dev tools looks like the source files, not the single generated file.
+You can call browserify with `-d` or `--debug` to generate source maps, so the code in the dev tools looks like the source files, not the single generated file. However at one point the embedded source maps froze up Sublime, so I prefer to spin them out to a separate file. This can be done with the `exorcist` module. To use it, install exorcist and change your browserify commands to pipe through exorcist and redirect the output to your file like this: `browserify app.js -d | exorcist wolves-client.js.map > wolves-client.js`.
 
 Use ` && ` as a separator to run multiple commands on the same line. Now you can run these with `npm run build` and `npm run watch` (alternatively, you could do this as part of your server process). However, you can't use ` && ` to run two watchify commands because watchify never returns. Instead you can do `start watchify ...` on windows or (I think) `watchify ... &` on *nix.
 
