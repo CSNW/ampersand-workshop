@@ -281,8 +281,9 @@ routes: {
 ```html
 <div class="well">
   <p>{{model.niceDate}}</p>
-  p= model.user.username
-  pre= model.content
+  <p>{{model.user.username}}</p>
+  <pre>{{model.content}}</pre>
+</div>
 ```
 
 
