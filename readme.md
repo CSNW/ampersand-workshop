@@ -298,8 +298,33 @@ routes: {
 </div>
 ```
 
-# 15. 
+# 15. Add "me", a current-user model
 
+- create `models/me.js`, inside extend ampersand model with the following properties, session properties and derived properties:
+
+```javascript
+props: {
+    id: 'string',
+    username: 'string'
+},
+session: {
+    token: ['string', false, '']
+},
+derived: {
+    isLoggedIn: {
+        deps: ['token'],
+        fn: function () {
+            if (this.token) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+```
+
+Session properties do not get persisted to the JSON that is sent to the server; derived properties are calculated just-in-time - change events on derived properties happen when any of that property's dependencies change.
 
 ## Aside: Converting error stacks using sourcemaps
 
