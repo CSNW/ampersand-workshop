@@ -26,7 +26,8 @@ Large sections of the app can be separated out into standalone modules, with the
 - create a new project folder, name it whatever you want and put `{"name": "wolves-client"}` in a `package.json` file in the root (this project is the main part of the &yet training and is part of a futuristic drama involving mad scientists and wolf attacks)
 - npm install mocha using the `--save-dev` to autopopulate package.json (see [npm install docs](https://www.npmjs.org/doc/cli/npm-install.html))
 - create a `tests` folder w/ a `main_view_tests.js` file that describes a "main view" (we haven't created this yet) -- the main view 'should render the text "Some Text"' (see [Mocha: Getting Started](http://mochajs.org/#getting-started) for an example)
-- the test should require MainView from `../views/main_view.js` (Node.js [require docs](http://nodejs.org/api/modules.html#modules_modules)), instantiate it with no arguments, and finally, use Node's [assert](http://nodejs.org/api/assert.html#assert_assert) to verify that the text in the view's `el` equals "Some Text" (you'll need to require assert at the top of your file, it's included in node so you don't have to `npm install` it).
+- the test should require the `MainView` class from `../views/main_view.js` (Node.js [require docs](http://nodejs.org/api/modules.html#modules_modules))
+- inside the `it()` test, it should create an instance of the class (instantiating with no arguments), and finally, use Node's [assert](http://nodejs.org/api/assert.html#assert_assert) to verify that the text in the view's `el` equals "Some Text" (you'll need to require assert at the top of your file, it's included in node so you don't have to `npm install` it).
 
 *Note:* Instead of installing jQuery for `$(el).text()`, use `el.textContent`, it's in the HTML standard & is supported by IE9+ (IE's `el.innerText` is non-standard & isn't supported by FF). If you really need IE8 support, there's a robust `textContent` polyfill at https://github.com/shawnbot/aight.
 
@@ -76,7 +77,7 @@ This is because everything is running in node and there is no global `document` 
 }
 ```
 
-- run your new build script via `npm run build` (`npm test` is unique in that it can be run without the `run` command, all other scripts need to be run with `npm run {{script_name}}`). If there is no output, it succeeded.
+- run your new build script via `npm run build` (`npm test` is unique in that it can be run without the `run` command, all other scripts need to be run with `npm run {{script_name}}`). You'll notice that `npm run build` will echo back the name of the  If there is no output, it succeeded.
 - create a `test.html` file in the root that looks like this:
 
 ```html
