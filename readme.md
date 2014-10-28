@@ -41,7 +41,7 @@ It's good to watch your test fail before you implement the functionality (the "r
 
 To get the tests to fail:
 - Verify that mocha is not globally installed (that you can't run it via `mocha tests`) -- it should be installed locally, not globally.
-  - if you *can* run mocha directly, run `where mocha` (win) or `which mocha` (*nix) to see where mocha is installed globally and remove it
+  - if you *can* run mocha directly, run `where mocha` (win) or `which mocha` (mac) to see where mocha is installed globally and remove it
   - you want a locally versioned & configured test framework, not a global one. One of the big advantages of `npm` and of node's module system is the priority given to locally-versioned and locally-configured dependencies.
 - to run mocha & see your tests fail, you can run `node_modules/.bin/mocha tests`
 - this should fail with `Error: Cannot find module '../views/main_view.js'` (b/c we haven't written this file yet)
@@ -107,7 +107,7 @@ This is because everything is running in node and there is no global `document` 
 }
 ```
 
-- run `npm test`, if the test doesn't pass, fix any bugs (Note that the files & line numbers in the error stack are untranslated -- they refer to the single bundle file instead of using the sourcemap. Apparently Chrome uses the sourcemap the debugger, but not for error messages. We can and should convert the stack using the sourcemap, but I still need to streamline the process, currently it's a bit of work, see the "Aside: Converting error stacks using sourcemaps" section below.)
+- run `npm test`, if the test doesn't pass, fix any bugs (Note that the files & line numbers in the error stack are untranslated -- they refer to the single bundle file instead of using the sourcemap. Apparently Chrome uses the sourcemap for the interactive debugger, but not for the stacktrace in error messages. We can and should convert the stack using the sourcemap, but I still need to streamline the process, currently it's a bit of work, see the very bottom of this readme ("Aside: Converting error stacks using sourcemaps").
 
 ## 4. Testing Manually
 
@@ -117,8 +117,9 @@ This is because everything is running in node and there is no global `document` 
 - at the bottom of app.js, run `window.app.init()`
 
 - run browserify on your app file as part of the build script by adding: `... && browserify app.js -o wolves-client.js`
-- write an `index.html` that consists of a single script tag pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply `<html>`, `<head>`, `<body>`, etc)
-- use `http-server -c-1` to server the content without caching it (-1) (if http-server's not already installed, it can be installed with `npm install http-server -g`
+- write an `index.html` that consists of a single script tag (don't forget the end tag) pointing to `wolves-client.js` (yes, it is browser-supported and standards-compliant to imply `<html>`, `<head>`, `<body>`, etc)
+- you can fire up the browser from the command line with `start index.html` (win) or `open index.html` (mac)
+- Verify that "Some Text" is displayed in the browser window
 
 ## 5. Smoothing the process with watchify
 
