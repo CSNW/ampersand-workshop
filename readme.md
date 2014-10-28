@@ -240,7 +240,7 @@ routes: {
 - save the template above into `views/main.mustache` using UTF-8 encoding
 - npm install `brfs`, which will statically change fs.readFileSync() into strings
 - add the `-t brfs` option to the browserify command, this adds the brfs module as a transform plugin
-- at the top of `main_view.js`, set a `template` variable to `fs.readFileSync('main.mustache', 'utf8');` and require `fs` at the top of the file
+- at the top of `main_view.js`, set a `template` variable to `fs.readFileSync('views/main.mustache', 'utf8');` and require `fs` at the top of the file
 - Note: there's a [brfs bug](https://github.com/substack/brfs/issues/28) where `require('fs')` as part of a comma-delimited multiple variable declaration statement fails to parse, so you need to put `var fs = require('fs');` as its own statement.
 - in `main_view.js`, set the `template` property to a function: `function(ctx) { return Mustache.render(template, ctx); }` and require `mustache` at the top of the file.
 
