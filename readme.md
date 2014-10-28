@@ -139,7 +139,7 @@ Use ` && ` as a separator to run multiple commands on the same line. Now you can
 
 ## 6. Add a home page
 
-- Write a `tests\home_view_tests.js` file that requires `../pages/home_page.js` (the ampersand convention is to put sub-views in `/views/` and top-level views in `/pages/`) and instantiates it and verifies that it contains the text "Hey there, wolves"
+- Write a `tests\home_view_tests.js` file that requires `../pages/home_page.js` (the ampersand convention is to put sub-views in `/views/` and top-level views in `/pages/`) and instantiates it and verifies that it has the text "Hey there, wolves" (you'll want to require node's built-in `assert` module again to do the assertion).
 - Write an `tests\index.js` file that requires both test files (be sure to begin the paths with `./`, otherwise node will think they're `npm install`ed modules, not relative file references)
 - Change the browserify/watchify test commands to point to this central file instead of `main_view_tests.js`
 - Create a `pages/home.js` view that inherits from `ampersand-view` and sets the `template` property to `<section class="page"><h1>Hey there, wolves</h1></section>`
