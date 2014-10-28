@@ -327,7 +327,7 @@ derived: {
 Session properties do not get persisted to the JSON that is sent to the server; derived properties are calculated just-in-time - change events on derived properties happen when any of that property's dependencies change.
 
 
-# 16. Instantiate me in app.js and 
+# 16. Instantiate me in app.js and a redirect to a 3rd party auth
 
 - In app.js, after instantiating the Router and the Howls -- but before domready -- add `window.me = this.me = new Me();` to expose the current user object globally and on the app.
 - in router.js, add a "login" route that maps to a "login" function. This function needs to redirect the user to a 3rd party authorization server and provide a callback URL once the user has authorized with the server:
@@ -337,7 +337,18 @@ var baseUrl = 'http://wolves.technology/authorize?redirect_uri=';
 window.location = baseUrl + encodeURIComponent(window.location.origin + '/auth/callback')
 ```
 
+# 17. Read in and handle the auth token
 
+Once the user has logged in with the authorization service (Google, Facebook or... wolves.technology), they will be sent back to our app with an auth token. We need to store it and use it on subsequent ajax calls.
+
+- In router.js, add an "auth/callback" route that goes to an `authCallback()` method
+- This method needs to parse the auth token using node's built-in querystring module (which needs to be `require()`d at the top of the file):
+
+```javascript
+var parsed = querystring.parse(location.hash.slice(1));
+```
+
+- Then take the `access_token` property of this parsed object, assign it to me.token and do a `this.redirectTo('/howls');`.
 
 ## Aside: Converting error stacks using sourcemaps
 
