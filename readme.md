@@ -76,7 +76,7 @@ This is because everything is running in node and there is no global `document` 
 }
 ```
 
-- run your new build script via `npm run build`. If there is no output, it succeeded.
+- run your new build script via `npm run build` (`npm test` is unique in that it can be run without the `run` command, all other scripts need to be run with `npm run {{script_name}}`). If there is no output, it succeeded.
 - create a `test.html` file in the root that looks like this:
 
 ```html
